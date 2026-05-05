@@ -1,6 +1,7 @@
 import db from '../config/db.ts';
 import type { ResultSetHeader } from 'mysql2/promise';
-import type Project, { ProjectInput } from '../types/interfaces/project.interface.ts';
+import type Project from '../types/interfaces/project.interface.ts';
+import type { ProjectInput } from '../types/interfaces/project.interface.ts';
 
 export const findAll = async () => {
   const [rows] = await db.query('SELECT * FROM projects ORDER BY created_at DESC');
