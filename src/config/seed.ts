@@ -14,7 +14,7 @@ const seed = async () => {
     }
 
     const [rows] = await db.execute<User[]>(
-      'SELECT * FROM user WHERE email = ?',
+      'SELECT * FROM users WHERE email = ?',
       [email],
     );
 
@@ -27,16 +27,9 @@ const seed = async () => {
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     const [result] = await db.execute<ResultSetHeader>(
-      'INSERT INTO user (email, password) VALUES (?, ?)',
-      [email, passwordHash],
+      'INSERT INTO users (email, password, role) VALUES (?, ?, ?)',
+      [email, passwordHash, 'admin'],
     );
-
-    const newUserId = result.insertId;
-
-    await db.query('INSERT INTO role_user (user_id, role_id) VALUES (?, ?)', [
-      newUserId,
-      1,
-    ]);
 
     console.info('✅ Admin account created successfully!');
     process.exit(0);
