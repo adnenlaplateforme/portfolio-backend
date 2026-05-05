@@ -1,6 +1,6 @@
 import type { ResultSetHeader } from 'mysql2/promise';
 import type User from '../types/interfaces/user.interface.js';
-import db from './connection.js';
+import db from './db.js';
 import bcrypt from 'bcrypt';
 
 const seed = async () => {
