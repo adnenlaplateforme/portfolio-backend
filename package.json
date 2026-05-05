@@ -1,10 +1,13 @@
 {
   "type": "module",
-  "script": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"   
-}    
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "seed": "tsx src/config/seed.ts"
+  },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -14,6 +17,13 @@
     "nodemailer": "^8.0.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/nodemailer": "^6.4.17",
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
   }
 }
