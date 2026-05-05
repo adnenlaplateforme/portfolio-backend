@@ -11,3 +11,12 @@ export default interface Project extends RowDataPacket {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface ProjectInput {
+  title: string;
+  description?: string;
+  tech_stack?: string;
+  github_url?: string;
+  demo_url?: string;
+  image_url?: string;
+}
