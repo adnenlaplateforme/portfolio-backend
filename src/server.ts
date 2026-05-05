@@ -4,6 +4,7 @@ import cors from 'cors';
 import './config/db.ts';
 
 import authRoutes from './routes/auth.routes.ts';
+import projectRoutes from './routes/project.routes.ts';
 import errorHandler from './middlewares/errorHandler.ts';
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
 
 app.use(errorHandler);
 
