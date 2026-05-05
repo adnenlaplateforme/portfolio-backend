@@ -1,0 +1,25 @@
+services:
+  marsai-db:
+    image: mysql:8.4.8
+    ports:
+      - '${MYSQL_PORT}:3306'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - '${PHPMYADMIN_PORT:-8080}:80'
+    environment:
+      PMA_HOST: marsai-db
+    depends_on:
+      - marsai-db
+volumes:
+  db_data:
