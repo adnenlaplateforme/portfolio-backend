@@ -1,8 +1,6 @@
 services:
-  marsai-db:
+  portfolio-db:
     image: mysql:8.4.8
-    ports:
-      - '${MYSQL_PORT}:3306'
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -10,16 +8,36 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./database:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    restart: always
+    ports:
+      - '${PORT}:3001'
+    env_file:
+      - .env
+    environment:
+      DB_HOST: portfolio-db
+      DB_PORT: 3306
+    depends_on:
+      portfolio-db:
+        condition: service_healthy
+
   phpmyadmin:
     image: phpmyadmin
     restart: always
     ports:
       - '${PHPMYADMIN_PORT:-8080}:80'
     environment:
-      PMA_HOST: marsai-db
+      PMA_HOST: portfolio-db
     depends_on:
-      - marsai-db
+      - portfolio-db
+
 volumes:
   db_data:
