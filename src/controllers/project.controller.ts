@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { getAllProjects as getAllProjectsService, getProjectById as getProjectByIdService, createProject as createProjectService } from '../services/project.service.ts';
-import AppError from '../errors/AppError.ts';
+import { getAllProjects as getAllProjectsService, getProjectById as getProjectByIdService, createProject as createProjectService } from '../services/project.service.js';
+import AppError from '../errors/AppError.js';
 
 export const getAllProjects = async (req: Request, res: Response) => {
   const projects = await getAllProjectsService();

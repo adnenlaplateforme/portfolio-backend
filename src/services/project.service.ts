@@ -1,6 +1,6 @@
-import { findAll, findById, create } from '../models/project.model.ts';
-import type { ProjectInput } from '../types/interfaces/project.interface.ts';
-import AppError from '../errors/AppError.ts';
+import { findAll, findById, create } from '../models/project.model.js';
+import type { ProjectInput } from '../types/interfaces/project.interface.js';
+import AppError from '../errors/AppError.js';
 
 export const getAllProjects = async () => {
   return findAll();

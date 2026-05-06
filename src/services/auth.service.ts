@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { findByEmail } from '../models/user.model.ts';
-import AppError from '../errors/AppError.ts';
+import { findByEmail } from '../models/user.model.js';
+import AppError from '../errors/AppError.js';
 
 export const loginUser = async ({ email, password }: { email: string; password: string }) => {
   const user = await findByEmail(email);

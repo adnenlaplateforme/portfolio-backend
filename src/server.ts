@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import './config/db.ts';
+import './config/db.js';
 
-import authRoutes from './routes/auth.routes.ts';
-import projectRoutes from './routes/project.routes.ts';
-import errorHandler from './middlewares/errorHandler.ts';
+import authRoutes from './routes/auth.routes.js';
+import projectRoutes from './routes/project.routes.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
