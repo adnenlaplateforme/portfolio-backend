@@ -5,6 +5,7 @@ export default interface Contact extends RowDataPacket {
   name: string;
   email: string;
   message: string;
+  status: 'pending' | 'read' | 'replied';
   created_at: Date;
 }
 
