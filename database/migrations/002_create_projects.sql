@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS projects (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  title       VARCHAR(150)  NOT NULL,
+  description TEXT,
+  tech_stack  VARCHAR(255),
+  github_url  VARCHAR(500),
+  demo_url    VARCHAR(500),
+  image_url   VARCHAR(500),
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

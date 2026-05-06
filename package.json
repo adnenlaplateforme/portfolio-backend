@@ -4,7 +4,8 @@
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
-    "seed": "tsx src/config/seed.ts"
+    "seed": "tsx src/config/seed.ts",
+    "migrate": "tsx src/config/migrate.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
