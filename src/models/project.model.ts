@@ -21,6 +21,11 @@ export const create = async (data: ProjectInput) => {
   return result.insertId;
 };
 
-/* export const update = async (id:number,data: ProjectInput) => {
-
-} */
+export const update = async (id: number, data: ProjectInput) => {
+  const [result] = await db.query<ResultSetHeader>(
+    'UPDATE projects SET title = ?, description = ?, tech_stack = ?, github_url = ?, demo_url = ?, image_url = ? WHERE id = ?',
+    [data.title, data.description ?? null, data.tech_stack ?? null, data.github_url ?? null, data.demo_url ?? null, data.image_url ?? null, id],
+  );
+  if (result.affectedRows === 0) return null;
+  return findById(id);
+};
