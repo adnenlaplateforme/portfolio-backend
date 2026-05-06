@@ -1,4 +1,4 @@
-import { findAll, findById, create, update } from '../models/project.model.js';
+import { findAll, findById, create, update, remove } from '../models/project.model.js';
 import type { ProjectInput } from '../types/interfaces/project.interface.js';
 import AppError from '../errors/AppError.js';
 
@@ -21,4 +21,9 @@ export const updateProject = async (id: number, data: ProjectInput) => {
   const project = await update(id, data);
   if (!project) throw new AppError('Projet introuvable', 404);
   return project;
+};
+
+export const deleteProject = async (id: number) => {
+  const deleted = await remove(id);
+  if (!deleted) throw new AppError('Projet introuvable', 404);
 };

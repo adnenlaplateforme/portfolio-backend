@@ -21,6 +21,11 @@ export const create = async (data: ProjectInput) => {
   return result.insertId;
 };
 
+export const remove = async (id: number) => {
+  const [result] = await db.query<ResultSetHeader>('DELETE FROM projects WHERE id = ?', [id]);
+  return result.affectedRows > 0;
+};
+
 export const update = async (id: number, data: ProjectInput) => {
   const [result] = await db.query<ResultSetHeader>(
     'UPDATE projects SET title = ?, description = ?, tech_stack = ?, github_url = ?, demo_url = ?, image_url = ? WHERE id = ?',

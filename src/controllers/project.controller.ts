@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getAllProjects as getAllProjectsService, getProjectById as getProjectByIdService, createProject as createProjectService, updateProject as updateProjectService } from '../services/project.service.js';
+import { getAllProjects as getAllProjectsService, getProjectById as getProjectByIdService, createProject as createProjectService, updateProject as updateProjectService, deleteProject as deleteProjectService } from '../services/project.service.js';
 import AppError from '../errors/AppError.js';
 
 export const getAllProjects = async (req: Request, res: Response) => {
@@ -24,4 +24,11 @@ export const updateProject = async (req: Request, res: Response) => {
   if (!Number.isInteger(id) || id <= 0) throw new AppError('Projet introuvable', 404);
   const project = await updateProjectService(id, req.body);
   res.json(project);
+};
+
+export const deleteProject = async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) throw new AppError('Projet introuvable', 404);
+  await deleteProjectService(id);
+  res.status(204).send();
 };
