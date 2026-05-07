@@ -35,7 +35,6 @@ services:
       OVH_USER: ${OVH_USER}
       OVH_PASS: ${OVH_PASS}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
-      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT}
       NODE_ENV: production
     depends_on:
       portfolio-db:
