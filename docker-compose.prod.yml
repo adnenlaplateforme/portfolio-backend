@@ -2,8 +2,6 @@ services:
   portfolio-db:
     image: mysql:8.4.8
     restart: always
-    ports:
-      - '${MYSQL_PORT:-3307}:3306'
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -18,28 +16,30 @@ services:
       retries: 5
 
   api:
-    build: .
+    image: adenino/portfolio-api:latest
     restart: always
     ports:
-      - '${PORT}:3001'
-    env_file:
-      - .env
+      - '${PORT:-3001}:3001'
     environment:
       DB_HOST: portfolio-db
       DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER}
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_PASS: ${GMAIL_PASS}
+      OVH_HOST: ${OVH_HOST}
+      OVH_PORT: ${OVH_PORT}
+      OVH_USER: ${OVH_USER}
+      OVH_PASS: ${OVH_PASS}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT}
+      NODE_ENV: production
     depends_on:
       portfolio-db:
         condition: service_healthy
-
-  phpmyadmin:
-    image: phpmyadmin
-    restart: always
-    ports:
-      - '${PHPMYADMIN_PORT:-8080}:80'
-    environment:
-      PMA_HOST: portfolio-db
-    depends_on:
-      - portfolio-db
 
 volumes:
   db_data:
