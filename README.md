@@ -11,7 +11,8 @@ API REST pour un portfolio de développeur, construite avec **Node.js / Express*
 - **Validation** : `express-validator`
 - **Mail** : Nodemailer (Gmail ou OVH SMTP)
 - **Infra locale** : Docker Compose (MySQL + phpMyAdmin)
-- **Infra prod** : Docker Compose + Coolify + Traefik
+- **Infra prod** : Docker Compose (`docker-compose.prod.yml`) + Coolify + Traefik
+- **CI/CD** : GitHub Actions → Docker Hub → Coolify webhook
 
 ## Prérequis
 
@@ -142,9 +143,54 @@ database/
 
 ## Déploiement
 
-Le déploiement sur le VPS est automatisé via GitHub Actions. Chaque push sur `main` déclenche le pipeline CI/CD qui redéploie l'application via Coolify.
+### Pipeline CI/CD
 
-Sur le VPS, au démarrage du container l'`entrypoint.sh` exécute automatiquement :
+Chaque push sur `main` déclenche automatiquement le pipeline GitHub Actions :
+
+1. **Build** — compile le TypeScript et construit l'image Docker
+2. **Push** — publie l'image sur Docker Hub (`adenino/portfolio-api:latest` + tag SHA)
+3. **Deploy** — appelle le webhook Coolify qui pull la nouvelle image et redémarre les containers
+
+### Secrets GitHub requis
+
+| Secret                  | Description                                      |
+|-------------------------|--------------------------------------------------|
+| `DOCKERHUB_USERNAME`    | Nom d'utilisateur Docker Hub                     |
+| `DOCKERHUB_TOKEN`       | Token d'accès Docker Hub                         |
+| `COOLIFY_WEBHOOK_URL`   | URL du webhook de déploiement Coolify            |
+| `COOLIFY_API_TOKEN`     | Token API Coolify (permission `deploy: true`)    |
+
+### Coolify
+
+L'application est déployée via `docker-compose.prod.yml` qui contient :
+- `portfolio-db` — MySQL 8.4 (pas exposé sur l'hôte, accès interne uniquement)
+- `api` — image Docker Hub, port interne `3001`, routage via Traefik
+
+Variables d'environnement à configurer dans Coolify (onglet **Environment Variables**) :
+
+```
+PORT=3001
+MYSQL_ROOT_PASSWORD=...
+DB_NAME=portfolio_db
+DB_USER=...
+DB_PASSWORD=...
+JWT_SECRET=...
+EMAIL_PROVIDER=gmail
+GMAIL_USER=...
+GMAIL_PASS=...
+ADMIN_EMAIL=...
+NODE_ENV=production
+```
+
+> Générer `MYSQL_ROOT_PASSWORD` et `JWT_SECRET` avec : `openssl rand -base64 32`
+
+### Démarrage du container
+
+Au démarrage, `entrypoint.sh` exécute automatiquement :
 1. `yarn migrate` — applique les nouvelles migrations
 2. `yarn seed` — crée le compte admin si absent
 3. `node dist/server.js` — démarre le serveur
+
+### Health check
+
+L'endpoint `GET /health` retourne `{"status":"ok"}` et est utilisé par Docker pour surveiller l'état du container.
