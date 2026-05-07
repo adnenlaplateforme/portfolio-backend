@@ -37,7 +37,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       NODE_ENV: production
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
       interval: 30s
       timeout: 5s
       retries: 3
