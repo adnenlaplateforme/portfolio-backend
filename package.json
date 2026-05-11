@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "seed": "tsx src/config/seed.ts",
     "migrate": "tsx src/config/migrate.ts",
     "test": "vitest run",
