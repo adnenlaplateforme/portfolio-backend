@@ -12,7 +12,11 @@ import contactRoutes from './routes/contact.routes.js';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+const allowedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
+  .split(',')
+  .map(o => o.trim());
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get('/health', (_req, res) => { res.json({ status: 'ok' }); });
