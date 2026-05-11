@@ -63,7 +63,7 @@ L'API écoute sur `http://localhost:${PORT}` (défaut : `3001`).
 
 ## Tests
 
-Les tests sont des tests unitaires Vitest sur la couche service. La base de données n'est jamais sollicitée : les dépendances sont mockées via `vi.mock`.
+33 tests répartis en deux catégories. La base de données n'est jamais sollicitée : toutes les dépendances sont mockées via `vi.mock`.
 
 ```bash
 # Lancer les tests une fois
@@ -76,13 +76,21 @@ yarn test:watch
 yarn test:coverage
 ```
 
-**Couverture :**
+**Tests unitaires — services**
 
-| Service             | Scénarios testés                                            |
-|---------------------|-------------------------------------------------------------|
-| `auth.service`      | Login valide, email inconnu, mauvais mot de passe          |
-| `project.service`   | CRUD complet, 404 sur ressource inexistante                 |
-| `contact.service`   | Sauvegarde DB + 2 emails, propagation d'erreurs            |
+| Fichier                       | Tests | Scénarios couverts                                         |
+|-------------------------------|-------|------------------------------------------------------------|
+| `auth.service.test.ts`        | 3     | Login valide, email inconnu, mauvais mot de passe          |
+| `project.service.test.ts`     | 8     | CRUD complet, 404 sur ressource inexistante                |
+| `contact.service.test.ts`     | 3     | Sauvegarde DB + 2 emails, propagation d'erreurs            |
+
+**Tests HTTP — routes (supertest)**
+
+| Fichier                       | Tests | Scénarios couverts                                                    |
+|-------------------------------|-------|-----------------------------------------------------------------------|
+| `auth.routes.test.ts`         | 4     | Login valide, credentials invalides, champs manquants, email invalide |
+| `project.routes.test.ts`      | 11    | CRUD complet, 401 sans token, 404 sur ressource inexistante           |
+| `contact.routes.test.ts`      | 4     | Envoi valide, champs manquants, message trop court, email invalide    |
 
 > Les tests sont exécutés automatiquement en CI avant chaque build. Un push qui fait échouer les tests bloque le déploiement.
 
@@ -165,8 +173,11 @@ src/
 ├── routes/         # Définition des routes Express
 ├── types/          # Interfaces TypeScript
 ├── errors/         # Classe AppError
+├── app.ts          # App Express (sans listen) — importé par les tests HTTP
+├── server.ts       # Point d'entrée prod (DB + listen)
 └── __tests__/
-    └── services/   # Tests unitaires Vitest
+    ├── services/   # Tests unitaires Vitest
+    └── routes/     # Tests HTTP supertest
 
 database/
 └── migrations/     # Fichiers SQL versionnés (001, 002, ...)
