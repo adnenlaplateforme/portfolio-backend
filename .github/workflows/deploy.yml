@@ -44,8 +44,9 @@ jobs:
           cache-to: type=inline
 
       - name: Deploy via Coolify
+        continue-on-error: true
         run: |
-          curl -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+          curl --max-time 30 -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
 
       - name: Create GitHub Release
