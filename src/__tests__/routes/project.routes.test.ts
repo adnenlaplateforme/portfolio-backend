@@ -56,6 +56,16 @@ describe('GET /api/projects/:id', () => {
     expect(res.status).toBe(404);
     expect(res.body.message).toBe('Projet introuvable');
   });
+
+  it('retourne 400 si l\'id est invalide', async () => {
+    const res = await request(app).get('/api/projects/abc');
+    expect(res.status).toBe(400);
+  });
+
+  it('retourne 400 si l\'id est 0 ou négatif', async () => {
+    const res = await request(app).get('/api/projects/0');
+    expect(res.status).toBe(400);
+  });
 });
 
 describe('POST /api/projects', () => {
@@ -108,6 +118,15 @@ describe('PUT /api/projects/:id', () => {
 
     expect(res.status).toBe(200);
   });
+
+  it('retourne 400 si l\'id est invalide', async () => {
+    const res = await request(app)
+      .put('/api/projects/abc')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ title: 'Modifié' });
+
+    expect(res.status).toBe(400);
+  });
 });
 
 describe('DELETE /api/projects/:id', () => {
@@ -135,5 +154,13 @@ describe('DELETE /api/projects/:id', () => {
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).toBe(404);
+  });
+
+  it('retourne 400 si l\'id est invalide', async () => {
+    const res = await request(app)
+      .delete('/api/projects/abc')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toBe(400);
   });
 });
