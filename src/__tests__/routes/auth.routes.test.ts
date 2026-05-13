@@ -34,7 +34,7 @@ describe('POST /api/auth/login', () => {
 
     const res = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'x@x.com', password: 'wrong' });
+      .send({ email: 'x@x.com', password: 'wrongpassword' });
 
     expect(res.status).toBe(401);
     expect(res.body.message).toBe('Invalid credentials');
@@ -52,6 +52,14 @@ describe('POST /api/auth/login', () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({ email: 'pas-un-email', password: 'password' });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('retourne 400 si le mot de passe est trop court', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'admin@test.com', password: 'court' });
 
     expect(res.status).toBe(400);
   });
