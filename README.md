@@ -7,7 +7,7 @@ Elle expose des endpoints pour l'authentification, la gestion de projets et l'en
 
 | Catégorie      | Outil                                              |
 |----------------|----------------------------------------------------|
-| Runtime        | Node.js 20 (LTS)                                  |
+| Runtime        | Node.js 22 (LTS)                                  |
 | Framework      | Express 5                                          |
 | Langage        | TypeScript (NodeNext)                              |
 | Base de données| MySQL 8.4 via `mysql2/promise`                    |
@@ -22,7 +22,7 @@ Elle expose des endpoints pour l'authentification, la gestion de projets et l'en
 ## Prérequis
 
 - [Docker](https://www.docker.com/) et Docker Compose
-- [Devbox](https://www.jetify.com/devbox) (optionnel — fournit Node 20 + Yarn isolés)
+- [Devbox](https://www.jetify.com/devbox) (optionnel — fournit Node 22 + Yarn isolés)
 
 ---
 
@@ -63,7 +63,7 @@ L'API écoute sur `http://localhost:${PORT}` (défaut : `3001`).
 
 ## Tests
 
-33 tests répartis en deux catégories. La base de données n'est jamais sollicitée : toutes les dépendances sont mockées via `vi.mock`.
+38 tests répartis en deux catégories. La base de données n'est jamais sollicitée : toutes les dépendances sont mockées via `vi.mock`.
 
 ```bash
 # Lancer les tests une fois
@@ -88,8 +88,8 @@ yarn test:coverage
 
 | Fichier                       | Tests | Scénarios couverts                                                    |
 |-------------------------------|-------|-----------------------------------------------------------------------|
-| `auth.routes.test.ts`         | 4     | Login valide, credentials invalides, champs manquants, email invalide |
-| `project.routes.test.ts`      | 11    | CRUD complet, 401 sans token, 404 sur ressource inexistante           |
+| `auth.routes.test.ts`         | 5     | Login valide, credentials invalides, champs manquants, email invalide, mot de passe trop court |
+| `project.routes.test.ts`      | 15    | CRUD complet, 401 sans token, 404 sur ressource inexistante, id invalide |
 | `contact.routes.test.ts`      | 4     | Envoi valide, champs manquants, message trop court, email invalide    |
 
 > Les tests sont exécutés automatiquement en CI avant chaque build. Un push qui fait échouer les tests bloque le déploiement.
@@ -202,7 +202,6 @@ push main / tag v*
       ├── Build image Docker
       ├── Push Docker Hub
       │     ├── adenino/portfolio-api:latest
-      │     ├── adenino/portfolio-api:<sha>
       │     └── adenino/portfolio-api:<tag>  (si tag v*)
       ├── Webhook Coolify (déploiement)
       └── GitHub Release (si tag v*)
