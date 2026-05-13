@@ -18,9 +18,10 @@ export const createProject = async (data: ProjectInput) => {
 };
 
 export const updateProject = async (id: number, data: ProjectInput) => {
-  const project = await ProjectModel.update(id, data);
-  if (!project) throw new AppError('Projet introuvable', 404);
-  return project;
+  const existing = await ProjectModel.findById(id);
+  if (!existing) throw new AppError('Projet introuvable', 404);
+  const merged = { ...existing, ...Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined)) };
+  return ProjectModel.update(id, merged);
 };
 
 export const deleteProject = async (id: number) => {

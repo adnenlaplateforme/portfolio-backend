@@ -14,9 +14,9 @@ export default interface Project extends RowDataPacket {
 
 export interface ProjectInput {
   title: string;
-  description?: string;
-  tech_stack?: string;
-  github_url?: string;
-  demo_url?: string;
-  image_url?: string;
+  description?: string | null;
+  tech_stack?: string | null;
+  github_url?: string | null;
+  demo_url?: string | null;
+  image_url?: string | null;
 }

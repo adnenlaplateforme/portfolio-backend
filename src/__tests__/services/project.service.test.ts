@@ -67,13 +67,24 @@ describe('project.service', () => {
 
   describe('updateProject', () => {
     it('retourne le projet mis à jour', async () => {
+      vi.mocked(projectModel.findById).mockResolvedValue(mockProject);
       vi.mocked(projectModel.update).mockResolvedValue(mockProject);
       const result = await updateProject(1, { title: 'Modifié' } as any);
       expect(result).toEqual(mockProject);
     });
 
+    it('ne modifie pas les champs absents du body', async () => {
+      vi.mocked(projectModel.findById).mockResolvedValue(mockProject);
+      vi.mocked(projectModel.update).mockResolvedValue(mockProject);
+      await updateProject(1, { title: 'Modifié' } as any);
+      expect(projectModel.update).toHaveBeenCalledWith(1, expect.objectContaining({
+        tech_stack: mockProject.tech_stack,
+        github_url: mockProject.github_url,
+      }));
+    });
+
     it("lève une AppError 404 si le projet n'existe pas", async () => {
-      vi.mocked(projectModel.update).mockResolvedValue(null);
+      vi.mocked(projectModel.findById).mockResolvedValue(null);
       await expect(updateProject(99, { title: 'X' } as any)).rejects.toMatchObject({ status: 404 });
     });
   });

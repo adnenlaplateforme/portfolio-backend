@@ -7,7 +7,8 @@ export const getAllProjects = async (req: Request, res: Response) => {
 };
 
 export const getProjectById = async (req: Request, res: Response) => {
-  const project = await ProjectService.getProjectById(Number(req.params.id));
+  const {id} = req.params;
+  const project = await ProjectService.getProjectById(Number(id));
   res.json(project);
 };
 
