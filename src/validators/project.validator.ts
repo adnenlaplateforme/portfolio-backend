@@ -1,4 +1,8 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
+
+export const validateProjectById = [
+  param('id').isInt({ min: 1 }).withMessage('ID invalide'),
+];
 
 export const validateProject = [
   body('title').notEmpty().withMessage('Titre requis').isLength({ max: 150 }).withMessage('Titre trop long').isLength({min: 3}).withMessage('Titre trop court'),
