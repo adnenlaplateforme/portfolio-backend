@@ -5,6 +5,9 @@ on:
     branches: [main]
     tags: ['v*']
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -62,10 +65,10 @@ jobs:
           cache-to: type=inline
 
       - name: Deploy via Coolify
-        continue-on-error: true
         run: |
-          curl --max-time 30 -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
+          curl --max-time 60 --connect-timeout 15 -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            && echo "Webhook Coolify déclenché" || echo "Webhook Coolify injoignable (ignoré)"
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
