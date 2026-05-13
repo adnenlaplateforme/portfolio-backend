@@ -63,7 +63,7 @@ L'API écoute sur `http://localhost:${PORT}` (défaut : `3001`).
 
 ## Tests
 
-38 tests répartis en deux catégories. La base de données n'est jamais sollicitée : toutes les dépendances sont mockées via `vi.mock`.
+39 tests répartis en deux catégories. La base de données n'est jamais sollicitée : toutes les dépendances sont mockées via `vi.mock`.
 
 ```bash
 # Lancer les tests une fois
@@ -81,7 +81,7 @@ yarn test:coverage
 | Fichier                       | Tests | Scénarios couverts                                         |
 |-------------------------------|-------|------------------------------------------------------------|
 | `auth.service.test.ts`        | 3     | Login valide, email inconnu, mauvais mot de passe          |
-| `project.service.test.ts`     | 8     | CRUD complet, 404 sur ressource inexistante                |
+| `project.service.test.ts`     | 9     | CRUD complet, 404 sur ressource inexistante, champs préservés sur PUT partiel |
 | `contact.service.test.ts`     | 3     | Sauvegarde DB + 2 emails, propagation d'erreurs            |
 
 **Tests HTTP — routes (supertest)**
