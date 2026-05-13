@@ -1,10 +1,10 @@
 import { sendEmail } from './email.service.js';
-import { create } from '../models/contact.model.js';
+import * as ContactModel from '../models/contact.model.js';
 
 const adminEmail = (process.env.EMAIL_PROVIDER === 'ovh' ? process.env.OVH_USER : process.env.GMAIL_USER) as string;
 
 export const sendContact = async ({ name, email, message }: { name: string; email: string; message: string }) => {
-  await create({ name, email, message });
+  await ContactModel.create({ name, email, message });
   await sendEmail({
     to: adminEmail,
     subject: `Nouveau message de contact — ${name}`,

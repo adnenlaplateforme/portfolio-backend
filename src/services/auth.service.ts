@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { findByEmail } from '../models/user.model.js';
+import * as UserModel from '../models/user.model.js';
 import AppError from '../errors/AppError.js';
 
 export const loginUser = async ({ email, password }: { email: string; password: string }) => {
-  const user = await findByEmail(email);
+  const user = await UserModel.findByEmail(email);
   if (!user) throw new AppError('Invalid credentials', 401);
 
   const match = await bcrypt.compare(password, user.password);
