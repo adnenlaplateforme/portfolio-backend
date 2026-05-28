@@ -14,6 +14,7 @@ Elle expose des endpoints pour l'authentification, la gestion de projets et l'en
 | Auth           | JWT (`jsonwebtoken`) + `bcrypt`                   |
 | Validation     | `express-validator`                                |
 | Mail           | Nodemailer — Gmail ou OVH SMTP                    |
+| Images         | Multer (upload) + Cloudinary (stockage)           |
 | Tests          | Vitest                                             |
 | Infra locale   | Docker Compose (MySQL + phpMyAdmin)               |
 | Infra prod     | Docker + Coolify + Traefik                        |
@@ -109,7 +110,7 @@ Le système enregistre les migrations déjà appliquées dans une table `migrati
 **Ajouter un changement de schéma :**
 
 ```bash
-touch database/migrations/005_description.sql
+touch database/migrations/006_description.sql
 # Écrire le SQL, puis :
 yarn migrate
 ```
@@ -140,6 +141,10 @@ Copier `.env.example` en `.env` et renseigner les valeurs.
 | `PHPMYADMIN_PORT`     | Port exposé par phpMyAdmin                     | `8082`                     |
 | `ADMIN_EMAIL`         | Email du compte admin (seed)                   | `admin@example.com`        |
 | `ADMIN_PASSWORD`      | Mot de passe du compte admin (seed)            | `password`                 |
+| `CLOUDINARY_CLOUD_NAME` | Nom du cloud Cloudinary                      | `dc9nsqicq`                |
+| `CLOUDINARY_API_KEY`  | Clé API Cloudinary                             | `149391...`                |
+| `CLOUDINARY_API_SECRET` | Secret API Cloudinary                        | `cmgxrn...`                |
+| `CLOUDINARY_FOLDER`   | Dossier de stockage des images                 | `portfolio`                |
 
 ---
 
@@ -151,12 +156,14 @@ Copier `.env.example` en `.env` et renseigner les valeurs.
 | POST    | `/api/auth/login`   | Public      | Connexion — retourne un JWT   |
 | GET     | `/api/projects`     | Public      | Liste des projets             |
 | GET     | `/api/projects/:id` | Public      | Détail d'un projet            |
-| POST    | `/api/projects`     | Admin (JWT) | Créer un projet               |
-| PUT     | `/api/projects/:id` | Admin (JWT) | Modifier un projet            |
+| POST    | `/api/projects`     | Admin (JWT) | Créer un projet (image optionnelle) |
+| PUT     | `/api/projects/:id` | Admin (JWT) | Modifier un projet (image optionnelle) |
 | DELETE  | `/api/projects/:id` | Admin (JWT) | Supprimer un projet           |
 | POST    | `/api/contact`      | Public      | Envoyer un message de contact |
 
 **Authentification :** les routes admin nécessitent un header `Authorization: Bearer <token>`.
+
+**Upload d'image :** les routes POST et PUT `/api/projects` acceptent un body `multipart/form-data` avec un champ `image` (JPEG, PNG, WEBP, GIF, SVG — 5 Mo max). L'image est uploadée sur Cloudinary et l'URL est retournée dans la réponse.
 
 ---
 
@@ -164,11 +171,11 @@ Copier `.env.example` en `.env` et renseigner les valeurs.
 
 ```
 src/
-├── config/         # Pool MySQL, transporter email, migrate, seed
+├── config/         # Pool MySQL, transporter email, Cloudinary, migrate, seed
 ├── controllers/    # Réception req/res, délégation au service
-├── services/       # Logique métier (testée)
+├── services/       # Logique métier — projets, auth, contact, stockage (testée)
 ├── models/         # Requêtes SQL
-├── middlewares/    # Auth JWT, autorisation, validation, erreurs
+├── middlewares/    # Auth JWT, autorisation, validation, upload, erreurs
 ├── validators/     # Règles express-validator
 ├── routes/         # Définition des routes Express
 ├── types/          # Interfaces TypeScript
@@ -248,6 +255,10 @@ GMAIL_PASS=...
 ADMIN_EMAIL=...
 ADMIN_PASSWORD=...
 NODE_ENV=production
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+CLOUDINARY_FOLDER=portfolio
 ```
 
 ### Démarrage du container
