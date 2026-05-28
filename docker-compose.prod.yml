@@ -36,6 +36,10 @@ services:
       OVH_PASS: ${OVH_PASS}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       NODE_ENV: production
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      CLOUDINARY_FOLDER: ${CLOUDINARY_FOLDER}
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 $${PORT:-3001}"]
       interval: 30s
