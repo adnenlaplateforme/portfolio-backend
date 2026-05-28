@@ -8,6 +8,7 @@ export default interface Project extends RowDataPacket {
   github_url: string | null;
   demo_url: string | null;
   image_url: string | null;
+  image_key: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -19,4 +20,5 @@ export interface ProjectInput {
   github_url?: string | null;
   demo_url?: string | null;
   image_url?: string | null;
+  image_key?: string | null;
 }

@@ -13,12 +13,12 @@ export const getProjectById = async (req: Request, res: Response) => {
 };
 
 export const createProject = async (req: Request, res: Response) => {
-  const project = await ProjectService.createProject(req.body);
+  const project = await ProjectService.createProject(req.body, req.file);
   res.status(201).json(project);
 };
 
 export const updateProject = async (req: Request, res: Response) => {
-  const project = await ProjectService.updateProject(Number(req.params.id), req.body);
+  const project = await ProjectService.updateProject(Number(req.params.id), req.body, req.file);
   res.json(project);
 };
 

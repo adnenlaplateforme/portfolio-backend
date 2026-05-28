@@ -8,6 +8,11 @@ vi.mock('../../models/project.model.js', () => ({
   remove: vi.fn(),
 }));
 
+vi.mock('../../services/storage.service.js', () => ({
+  uploadImage: vi.fn(),
+  deleteImage: vi.fn(),
+}));
+
 import * as projectModel from '../../models/project.model.js';
 import {
   getAllProjects,
@@ -91,12 +96,13 @@ describe('project.service', () => {
 
   describe('deleteProject', () => {
     it('se résout sans valeur si suppression réussie', async () => {
+      vi.mocked(projectModel.findById).mockResolvedValue(mockProject);
       vi.mocked(projectModel.remove).mockResolvedValue(true);
       await expect(deleteProject(1)).resolves.toBeUndefined();
     });
 
     it("lève une AppError 404 si le projet n'existe pas", async () => {
-      vi.mocked(projectModel.remove).mockResolvedValue(false);
+      vi.mocked(projectModel.findById).mockResolvedValue(null);
       await expect(deleteProject(99)).rejects.toMatchObject({ status: 404 });
     });
   });
