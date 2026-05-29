@@ -265,10 +265,32 @@ CLOUDINARY_FOLDER=portfolio
 
 `entrypoint.sh` s'exécute automatiquement au démarrage et enchaîne :
 
-1. `yarn migrate` — applique les migrations en attente
-2. `yarn seed` — crée le compte admin s'il n'existe pas
+1. `node dist/config/migrate.js` — applique les migrations en attente
+2. `node dist/config/seed.js` — crée le compte admin s'il n'existe pas
 3. `node dist/server.js` — démarre le serveur
 
 ### Health check
 
 `GET /health` retourne `{"status":"ok"}` — utilisé par Docker pour surveiller l'état du container.
+
+---
+
+## Opérations courantes en prod
+
+### Modifier les variables d'environnement
+
+Toute modification dans Coolify (onglet **Environment Variables**) nécessite un redéploiement pour être prise en compte — les variables sont injectées au démarrage du container, pas à chaud.
+
+### Changer le mot de passe admin
+
+Le seed ne recrée pas l'admin s'il existe déjà. Changer `ADMIN_PASSWORD` dans le `.env` ne met donc pas à jour le hash en base.
+
+Pour appliquer un nouveau mot de passe :
+
+1. Se connecter au container `portfolio-db` :
+   ```bash
+   mysql -u <DB_USER> -p
+   USE portfolio_db;
+   DELETE FROM users WHERE email = '<ADMIN_EMAIL>';
+   ```
+2. Redémarrer le container `api` — l'`entrypoint.sh` recrée l'admin avec le nouveau mot de passe.
