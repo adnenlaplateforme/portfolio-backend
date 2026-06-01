@@ -3,9 +3,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.mock('../../models/project.model.js', () => ({
   findAll: vi.fn(),
   findById: vi.fn(),
+  findManyByIds: vi.fn(),
   create: vi.fn(),
   update: vi.fn(),
   remove: vi.fn(),
+  removeMany: vi.fn(),
 }));
 
 vi.mock('../../services/storage.service.js', () => ({
@@ -14,12 +16,14 @@ vi.mock('../../services/storage.service.js', () => ({
 }));
 
 import * as projectModel from '../../models/project.model.js';
+import * as storageService from '../../services/storage.service.js';
 import {
   getAllProjects,
   getProjectById,
   createProject,
   updateProject,
   deleteProject,
+  deleteProjects,
 } from '../../services/project.service.js';
 
 const mockProject = {
@@ -102,6 +106,33 @@ describe('project.service', () => {
     it("lève une AppError 404 si le projet n'existe pas", async () => {
       vi.mocked(projectModel.findById).mockResolvedValue(null);
       await expect(deleteProject(99)).rejects.toMatchObject({ status: 404 });
+    });
+  });
+
+  describe('deleteProjects', () => {
+    it('supprime les projets et leurs images Cloudinary', async () => {
+      const projects = [
+        { id: 1, image_key: 'key1' },
+        { id: 2, image_key: null },
+      ];
+      vi.mocked(projectModel.findManyByIds).mockResolvedValue(projects as any);
+      vi.mocked(projectModel.removeMany).mockResolvedValue(undefined);
+
+      await expect(deleteProjects([1, 2])).resolves.toBeUndefined();
+
+      expect(projectModel.findManyByIds).toHaveBeenCalledWith([1, 2]);
+      expect(storageService.deleteImage).toHaveBeenCalledTimes(1);
+      expect(storageService.deleteImage).toHaveBeenCalledWith('key1');
+      expect(projectModel.removeMany).toHaveBeenCalledWith([1, 2]);
+    });
+
+    it('ne supprime aucune image si aucun projet n\'en a', async () => {
+      vi.mocked(projectModel.findManyByIds).mockResolvedValue([{ id: 1, image_key: null }] as any);
+      vi.mocked(projectModel.removeMany).mockResolvedValue(undefined);
+
+      await deleteProjects([1]);
+
+      expect(storageService.deleteImage).not.toHaveBeenCalled();
     });
   });
 });

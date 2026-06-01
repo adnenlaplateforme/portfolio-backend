@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 vi.mock('../../services/auth.service.js', () => ({ loginUser: vi.fn() }));
 vi.mock('../../services/project.service.js', () => ({
   getAllProjects: vi.fn(), getProjectById: vi.fn(), createProject: vi.fn(),
-  updateProject: vi.fn(), deleteProject: vi.fn(),
+  updateProject: vi.fn(), deleteProject: vi.fn(), deleteProjects: vi.fn(),
 }));
 vi.mock('../../services/contact.service.js', () => ({ sendContact: vi.fn() }));
 vi.mock('../../services/email.service.js', () => ({ sendEmail: vi.fn() }));
@@ -128,6 +128,42 @@ describe('PUT /api/projects/:id', () => {
       .put('/api/projects/abc')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ title: 'Modifié' });
+
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('DELETE /api/projects (bulk)', () => {
+  it('retourne 401 sans token', async () => {
+    const res = await request(app).delete('/api/projects').send({ ids: [1, 2] });
+    expect(res.status).toBe(401);
+  });
+
+  it('retourne 204 avec un token admin valide', async () => {
+    vi.mocked(projectService.deleteProjects).mockResolvedValue(undefined);
+
+    const res = await request(app)
+      .delete('/api/projects')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ids: [1, 2] });
+
+    expect(res.status).toBe(204);
+  });
+
+  it('retourne 400 si ids est vide', async () => {
+    const res = await request(app)
+      .delete('/api/projects')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ids: [] });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('retourne 400 si ids contient des valeurs invalides', async () => {
+    const res = await request(app)
+      .delete('/api/projects')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ids: [0, -1] });
 
     expect(res.status).toBe(400);
   });

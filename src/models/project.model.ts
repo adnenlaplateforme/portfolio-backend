@@ -57,6 +57,20 @@ export const remove = async (id: number) => {
   return result.affectedRows > 0;
 };
 
+export const findManyByIds = async (ids: number[]) => {
+  const placeholders = ids.map(() => '?').join(', ');
+  const [rows] = await db.execute<Pick<Project, 'id' | 'image_key'>[]>(
+    `SELECT id, image_key FROM projects WHERE id IN (${placeholders})`,
+    ids,
+  );
+  return rows;
+};
+
+export const removeMany = async (ids: number[]) => {
+  const placeholders = ids.map(() => '?').join(', ');
+  await db.execute(`DELETE FROM projects WHERE id IN (${placeholders})`, ids);
+};
+
 export const update = async (id: number, data: ProjectInput) => {
   const [result] = await db.execute<ResultSetHeader>(
     'UPDATE projects SET title = ?, description = ?, github_url = ?, demo_url = ?, image_url = ?, image_key = ? WHERE id = ?',

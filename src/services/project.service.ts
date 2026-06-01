@@ -50,3 +50,11 @@ export const deleteProject = async (id: number) => {
 
   await ProjectModel.remove(id);
 };
+
+export const deleteProjects = async (ids: number[]) => {
+  const projects = await ProjectModel.findManyByIds(ids);
+  await Promise.all(
+    projects.filter(p => p.image_key).map(p => StorageService.deleteImage(p.image_key!)),
+  );
+  await ProjectModel.removeMany(ids);
+};

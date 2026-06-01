@@ -4,6 +4,13 @@ export const validateProjectById = [
   param('id').isInt({ min: 1 }).withMessage('ID invalide'),
 ];
 
+export const validateProjectIds = [
+  body('ids')
+    .isArray({ min: 1 }).withMessage('ids doit être un tableau non vide')
+    .custom((arr: unknown[]) => arr.every(id => Number.isInteger(id) && (id as number) > 0))
+    .withMessage('ids doit contenir des entiers positifs'),
+];
+
 const tagIdsValidator = body('tag_ids')
   .optional()
   .customSanitizer(val => {

@@ -26,3 +26,8 @@ export const deleteProject = async (req: Request, res: Response) => {
   await ProjectService.deleteProject(Number(req.params.id));
   res.status(204).send();
 };
+
+export const deleteProjects = async (req: Request, res: Response) => {
+  await ProjectService.deleteProjects(req.body.ids);
+  res.status(204).send();
+};
