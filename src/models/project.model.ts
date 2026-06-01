@@ -59,7 +59,7 @@ export const remove = async (id: number) => {
 
 export const findManyByIds = async (ids: number[]) => {
   const placeholders = ids.map(() => '?').join(', ');
-  const [rows] = await db.execute<Pick<Project, 'id' | 'image_key'>[]>(
+  const [rows] = await db.execute<(Pick<Project, 'id' | 'image_key'> & RowDataPacket)[]>(
     `SELECT id, image_key FROM projects WHERE id IN (${placeholders})`,
     ids,
   );
