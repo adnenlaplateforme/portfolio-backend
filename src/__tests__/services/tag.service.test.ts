@@ -6,6 +6,7 @@ vi.mock('../../models/tag.model.js', () => ({
   create: vi.fn(),
   update: vi.fn(),
   remove: vi.fn(),
+  removeMany: vi.fn(),
 }));
 
 import * as tagModel from '../../models/tag.model.js';
@@ -15,6 +16,7 @@ import {
   createTag,
   updateTag,
   deleteTag,
+  deleteTags,
 } from '../../services/tag.service.js';
 
 const mockTag = { id: 1, name: 'react' } as any;
@@ -55,6 +57,11 @@ describe('tag.service', () => {
       expect(tagModel.create).toHaveBeenCalledWith({ name: 'react' });
       expect(tagModel.findById).toHaveBeenCalledWith(1);
     });
+
+    it('lève une AppError 409 si le tag existe déjà', async () => {
+      vi.mocked(tagModel.create).mockRejectedValue({ code: 'ER_DUP_ENTRY' });
+      await expect(createTag({ name: 'react' })).rejects.toMatchObject({ status: 409 });
+    });
   });
 
   describe('updateTag', () => {
@@ -71,6 +78,12 @@ describe('tag.service', () => {
       vi.mocked(tagModel.findById).mockResolvedValue(null);
       await expect(updateTag(99, { name: 'vue' })).rejects.toMatchObject({ status: 404 });
     });
+
+    it('lève une AppError 409 si le nouveau nom est déjà pris', async () => {
+      vi.mocked(tagModel.findById).mockResolvedValue(mockTag);
+      vi.mocked(tagModel.update).mockRejectedValue({ code: 'ER_DUP_ENTRY' });
+      await expect(updateTag(1, { name: 'vue' })).rejects.toMatchObject({ status: 409 });
+    });
   });
   
   describe('deleteTag', () => {
@@ -83,6 +96,14 @@ describe('tag.service', () => {
     it('lève une AppError 404 si le tag n\'existe pas', async () => {
       vi.mocked(tagModel.findById).mockResolvedValue(null);
       await expect(deleteTag(99)).rejects.toMatchObject({ status: 404 });
+    });
+  });
+
+  describe('deleteTags', () => {
+    it('appelle removeMany avec les ids', async () => {
+      vi.mocked(tagModel.removeMany).mockResolvedValue(undefined);
+      await expect(deleteTags([1, 2])).resolves.toBeUndefined();
+      expect(tagModel.removeMany).toHaveBeenCalledWith([1, 2]);
     });
   });
 });

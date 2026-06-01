@@ -11,7 +11,7 @@ vi.mock('../../services/contact.service.js', () => ({ sendContact: vi.fn() }));
 vi.mock('../../services/email.service.js', () => ({ sendEmail: vi.fn() }));
 vi.mock('../../services/tag.service.js', () => ({
   getAllTags: vi.fn(), getTagById: vi.fn(),
-  createTag: vi.fn(), updateTag: vi.fn(), deleteTag: vi.fn(),
+  createTag: vi.fn(), updateTag: vi.fn(), deleteTag: vi.fn(), deleteTags: vi.fn(),
 }));
 
 import * as tagService from '../../services/tag.service.js';
@@ -114,6 +114,42 @@ describe('PUT /api/tags/:id', () => {
       .put('/api/tags/abc')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ name: 'vue' });
+
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('DELETE /api/tags (bulk)', () => {
+  it('retourne 401 sans token', async () => {
+    const res = await request(app).delete('/api/tags').send({ ids: [1, 2] });
+    expect(res.status).toBe(401);
+  });
+
+  it('retourne 204 avec un token admin valide', async () => {
+    vi.mocked(tagService.deleteTags).mockResolvedValue(undefined);
+
+    const res = await request(app)
+      .delete('/api/tags')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ids: [1, 2] });
+
+    expect(res.status).toBe(204);
+  });
+
+  it('retourne 400 si ids est vide', async () => {
+    const res = await request(app)
+      .delete('/api/tags')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ids: [] });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('retourne 400 si ids contient des valeurs invalides', async () => {
+    const res = await request(app)
+      .delete('/api/tags')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ ids: [0, -1] });
 
     expect(res.status).toBe(400);
   });

@@ -34,3 +34,8 @@ export const remove = async (id: number) => {
   const [result] = await db.execute<ResultSetHeader>('DELETE FROM tags WHERE id = ?', [id]);
   return result.affectedRows > 0;
 };
+
+export const removeMany = async (ids: number[]) => {
+  const placeholders = ids.map(() => '?').join(', ');
+  await db.execute(`DELETE FROM tags WHERE id IN (${placeholders})`, ids);
+};

@@ -25,3 +25,8 @@ export const deleteTag = async (req: Request, res: Response) => {
   await TagService.deleteTag(Number(req.params.id));
   res.status(204).send();
 };
+
+export const deleteTags = async (req: Request, res: Response) => {
+  await TagService.deleteTags(req.body.ids);
+  res.status(204).send();
+};
