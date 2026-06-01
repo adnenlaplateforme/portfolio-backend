@@ -8,6 +8,10 @@ vi.mock('../../services/project.service.js', () => ({
 }));
 vi.mock('../../services/contact.service.js', () => ({ sendContact: vi.fn() }));
 vi.mock('../../services/email.service.js', () => ({ sendEmail: vi.fn() }));
+vi.mock('../../services/tag.service.js', () => ({
+  getAllTags: vi.fn(), getTagById: vi.fn(),
+  createTag: vi.fn(), updateTag: vi.fn(), deleteTag: vi.fn(),
+}));
 
 import * as authService from '../../services/auth.service.js';
 import AppError from '../../errors/AppError.js';

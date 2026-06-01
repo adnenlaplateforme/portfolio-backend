@@ -1,4 +1,5 @@
 import type { RowDataPacket } from 'mysql2/promise';
+import type Tag from './tag.interface.js';
 
 export default interface Project extends RowDataPacket {
   id: number;
@@ -11,6 +12,7 @@ export default interface Project extends RowDataPacket {
   image_key: string | null;
   created_at: Date;
   updated_at: Date;
+  tags?: Tag[];
 }
 
 export interface ProjectInput {
@@ -21,4 +23,5 @@ export interface ProjectInput {
   demo_url?: string | null;
   image_url?: string | null;
   image_key?: string | null;
+  tag_ids?: number[];
 }

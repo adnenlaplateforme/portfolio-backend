@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
+import tagRoutes from './routes/tag.routes.js';
 import emailRoutes from './routes/email.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import errorHandler from './middlewares/errorHandler.js';
@@ -21,6 +22,7 @@ app.get('/health', (_req, res) => { res.json({ status: 'ok' }); });
 
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/tags', tagRoutes);
 app.use('/emails', emailRoutes);
 app.use('/api/contact', contactRoutes);
 

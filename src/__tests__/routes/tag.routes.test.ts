@@ -14,88 +14,77 @@ vi.mock('../../services/tag.service.js', () => ({
   createTag: vi.fn(), updateTag: vi.fn(), deleteTag: vi.fn(),
 }));
 
-import * as projectService from '../../services/project.service.js';
+import * as tagService from '../../services/tag.service.js';
 import AppError from '../../errors/AppError.js';
 import app from '../../app.js';
 
 const JWT_SECRET = 'test-secret';
 let adminToken: string;
 
-const mockProject = {
-  id: 1, title: 'Mon projet', description: null,
-  tech_stack: 'Node.js', github_url: null, demo_url: null, image_url: null,
-};
+const mockTag = { id: 1, name: 'react' };
 
 beforeAll(() => {
   process.env.JWT_SECRET = JWT_SECRET;
   adminToken = jwt.sign({ id: 1, email: 'admin@test.com', role: 'admin' }, JWT_SECRET);
 });
 
-describe('GET /api/projects', () => {
-  it('retourne 200 avec la liste des projets', async () => {
-    vi.mocked(projectService.getAllProjects).mockResolvedValue([mockProject] as any);
+describe('GET /api/tags', () => {
+  it('retourne 200 avec la liste des tags', async () => {
+    vi.mocked(tagService.getAllTags).mockResolvedValue([mockTag] as any);
 
-    const res = await request(app).get('/api/projects');
+    const res = await request(app).get('/api/tags');
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([mockProject]);
+    expect(res.body).toEqual([mockTag]);
   });
 });
 
-describe('GET /api/projects/:id', () => {
-  it('retourne 200 avec le projet', async () => {
-    vi.mocked(projectService.getProjectById).mockResolvedValue(mockProject as any);
+describe('GET /api/tags/:id', () => {
+  it('retourne 200 avec le tag', async () => {
+    vi.mocked(tagService.getTagById).mockResolvedValue(mockTag as any);
 
-    const res = await request(app).get('/api/projects/1');
+    const res = await request(app).get('/api/tags/1');
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual(mockProject);
+    expect(res.body).toEqual(mockTag);
   });
 
-  it('retourne 404 si le projet n\'existe pas', async () => {
-    vi.mocked(projectService.getProjectById).mockRejectedValue(new AppError('Projet introuvable', 404));
+  it('retourne 404 si le tag n\'existe pas', async () => {
+    vi.mocked(tagService.getTagById).mockRejectedValue(new AppError('Tag introuvable', 404));
 
-    const res = await request(app).get('/api/projects/99');
+    const res = await request(app).get('/api/tags/99');
 
     expect(res.status).toBe(404);
-    expect(res.body.message).toBe('Projet introuvable');
+    expect(res.body.message).toBe('Tag introuvable');
   });
 
   it('retourne 400 si l\'id est invalide', async () => {
-    const res = await request(app).get('/api/projects/abc');
-    expect(res.status).toBe(400);
-  });
-
-  it('retourne 400 si l\'id est 0 ou négatif', async () => {
-    const res = await request(app).get('/api/projects/0');
+    const res = await request(app).get('/api/tags/abc');
     expect(res.status).toBe(400);
   });
 });
 
-describe('POST /api/projects', () => {
+describe('POST /api/tags', () => {
   it('retourne 401 sans token', async () => {
-    const res = await request(app)
-      .post('/api/projects')
-      .send({ title: 'Test' });
-
+    const res = await request(app).post('/api/tags').send({ name: 'react' });
     expect(res.status).toBe(401);
   });
 
   it('retourne 201 avec un token admin valide', async () => {
-    vi.mocked(projectService.createProject).mockResolvedValue(mockProject as any);
+    vi.mocked(tagService.createTag).mockResolvedValue(mockTag as any);
 
     const res = await request(app)
-      .post('/api/projects')
+      .post('/api/tags')
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ title: 'Mon projet' });
+      .send({ name: 'react' });
 
     expect(res.status).toBe(201);
-    expect(res.body).toEqual(mockProject);
+    expect(res.body).toEqual(mockTag);
   });
 
-  it('retourne 400 si le titre est manquant', async () => {
+  it('retourne 400 si le nom est manquant', async () => {
     const res = await request(app)
-      .post('/api/projects')
+      .post('/api/tags')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({});
 
@@ -103,58 +92,54 @@ describe('POST /api/projects', () => {
   });
 });
 
-describe('PUT /api/projects/:id', () => {
+describe('PUT /api/tags/:id', () => {
   it('retourne 401 sans token', async () => {
-    const res = await request(app)
-      .put('/api/projects/1')
-      .send({ title: 'Modifié' });
-
+    const res = await request(app).put('/api/tags/1').send({ name: 'vue' });
     expect(res.status).toBe(401);
   });
 
   it('retourne 200 avec un token admin valide', async () => {
-    vi.mocked(projectService.updateProject).mockResolvedValue(mockProject as any);
+    vi.mocked(tagService.updateTag).mockResolvedValue(mockTag as any);
 
     const res = await request(app)
-      .put('/api/projects/1')
+      .put('/api/tags/1')
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ title: 'Modifié' });
+      .send({ name: 'vue' });
 
     expect(res.status).toBe(200);
   });
 
   it('retourne 400 si l\'id est invalide', async () => {
     const res = await request(app)
-      .put('/api/projects/abc')
+      .put('/api/tags/abc')
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ title: 'Modifié' });
+      .send({ name: 'vue' });
 
     expect(res.status).toBe(400);
   });
 });
 
-describe('DELETE /api/projects/:id', () => {
+describe('DELETE /api/tags/:id', () => {
   it('retourne 401 sans token', async () => {
-    const res = await request(app).delete('/api/projects/1');
-
+    const res = await request(app).delete('/api/tags/1');
     expect(res.status).toBe(401);
   });
 
   it('retourne 204 avec un token admin valide', async () => {
-    vi.mocked(projectService.deleteProject).mockResolvedValue(undefined);
+    vi.mocked(tagService.deleteTag).mockResolvedValue(undefined);
 
     const res = await request(app)
-      .delete('/api/projects/1')
+      .delete('/api/tags/1')
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).toBe(204);
   });
 
-  it('retourne 404 si le projet n\'existe pas', async () => {
-    vi.mocked(projectService.deleteProject).mockRejectedValue(new AppError('Projet introuvable', 404));
+  it('retourne 404 si le tag n\'existe pas', async () => {
+    vi.mocked(tagService.deleteTag).mockRejectedValue(new AppError('Tag introuvable', 404));
 
     const res = await request(app)
-      .delete('/api/projects/99')
+      .delete('/api/tags/99')
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).toBe(404);
@@ -162,7 +147,7 @@ describe('DELETE /api/projects/:id', () => {
 
   it('retourne 400 si l\'id est invalide', async () => {
     const res = await request(app)
-      .delete('/api/projects/abc')
+      .delete('/api/tags/abc')
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).toBe(400);
