@@ -26,7 +26,6 @@ const mockProject = {
   id: 1,
   title: 'Mon projet',
   description: null,
-  tech_stack: 'Node.js',
   github_url: null,
   demo_url: null,
   image_url: null,
@@ -83,7 +82,6 @@ describe('project.service', () => {
       vi.mocked(projectModel.update).mockResolvedValue(mockProject);
       await updateProject(1, { title: 'Modifié' } as any);
       expect(projectModel.update).toHaveBeenCalledWith(1, expect.objectContaining({
-        tech_stack: mockProject.tech_stack,
         github_url: mockProject.github_url,
       }));
     });

@@ -44,8 +44,8 @@ export const findById = async (id: number) => {
 
 export const create = async (data: ProjectInput) => {
   const [result] = await db.execute<ResultSetHeader>(
-    'INSERT INTO projects (title, description, tech_stack, github_url, demo_url, image_url, image_key) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [data.title, data.description ?? null, data.tech_stack ?? null, data.github_url ?? null, data.demo_url ?? null, data.image_url ?? null, data.image_key ?? null],
+    'INSERT INTO projects (title, description, github_url, demo_url, image_url, image_key) VALUES (?, ?, ?, ?, ?, ?)',
+    [data.title, data.description ?? null, data.github_url ?? null, data.demo_url ?? null, data.image_url ?? null, data.image_key ?? null],
   );
   const insertId = result.insertId;
   if (data.tag_ids) await syncTags(insertId, data.tag_ids);
@@ -59,8 +59,8 @@ export const remove = async (id: number) => {
 
 export const update = async (id: number, data: ProjectInput) => {
   const [result] = await db.execute<ResultSetHeader>(
-    'UPDATE projects SET title = ?, description = ?, tech_stack = ?, github_url = ?, demo_url = ?, image_url = ?, image_key = ? WHERE id = ?',
-    [data.title, data.description ?? null, data.tech_stack ?? null, data.github_url ?? null, data.demo_url ?? null, data.image_url ?? null, data.image_key ?? null, id],
+    'UPDATE projects SET title = ?, description = ?, github_url = ?, demo_url = ?, image_url = ?, image_key = ? WHERE id = ?',
+    [data.title, data.description ?? null, data.github_url ?? null, data.demo_url ?? null, data.image_url ?? null, data.image_key ?? null, id],
   );
   if (result.affectedRows === 0) return null;
   if (data.tag_ids !== undefined) await syncTags(id, data.tag_ids);

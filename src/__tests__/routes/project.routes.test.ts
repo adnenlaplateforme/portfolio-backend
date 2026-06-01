@@ -23,7 +23,7 @@ let adminToken: string;
 
 const mockProject = {
   id: 1, title: 'Mon projet', description: null,
-  tech_stack: 'Node.js', github_url: null, demo_url: null, image_url: null,
+  github_url: null, demo_url: null, image_url: null,
 };
 
 beforeAll(() => {
